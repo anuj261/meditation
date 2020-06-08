@@ -26,12 +26,7 @@ node index.js
 API collection Description
 
 POSTMAN collection
-https://www.getpostman.com/collections/f60bfd4556330802cf7a
-
-
-
-
-
+https://www.getpostman.com/collections/5f041648d2ca6cbd5398
 
 
 
@@ -99,5 +94,15 @@ GET /api/product/purchase/:purchase_id
 
 8. Get list of all product
 GET /api/product/purchase/list
+
+9. Get list of product view
+
+GET api/product/view/filter
+productId=5edbe9890ce7e20c10485811
+filterby=daily
+filterby=monthly
+filterby=monthly
+filterby=yearly
+filterby=custom&startDate=2020-08-03&endDate=2021-08-03
 
 

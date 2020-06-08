@@ -17,6 +17,10 @@ module.exports = () => {
   router.post("/api/product/purchase/create",
   product.createProductPurchase
   );
+
+  router.post("/api/product/view/create",
+  product.createProductView
+  );
  
   router.get("/api/product/:product_id",
   product.productById
@@ -30,6 +34,10 @@ module.exports = () => {
 
   router.get("/api/product/purchase/filter",
   product.purchasebyproductFilter
+  );
+
+  router.get("/api/product/view/filter",
+  product.productViewFilter
   );
 
   router.get("/api/product/purchase/:purchase_id",

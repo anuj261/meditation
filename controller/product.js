@@ -4,9 +4,11 @@ const moment = require('moment');
 require('../models/product');
 require('../models/purchase');
 require('../models/user');
+require('../models/userView');
 
 const Product = mongoose.model('Product');
 const Purchase = mongoose.model('Purchase');
+const UserView = mongoose.model('UserView');
 const User = mongoose.model('User');
 
 
@@ -79,6 +81,47 @@ function createProductPurchase(req, res, next) {
 	productQuery.date = payload.date
 
 	Purchase.create(productQuery, (err, purchaseResults) => {
+		if (err) {
+			console.log(`error while creating product purchase ${err || err.stack}`);
+
+			if (err.code == 11000) {
+				return res.status(400).json({
+					error: 'Duplicate record'
+				});
+			}
+			return res.status(400).json({
+				error: 'something went wrong, please try again later'
+			});
+		}
+
+		res.status(200).json({
+			purchaseResults,
+			result: 'product purchase details stored successfully'
+		});
+	});
+}
+
+/**
+ * Create a Product purchase
+ * @param {*} req 
+ * @param {*} res product purchase details
+ */
+function createProductView(req, res, next) {
+	const payload = req.body;
+	const productQuery = {}
+
+	const validate = utility.validateParams(payload, ['user_id', 'product_id']);
+	if (validate) {
+		return res.status(validate.status).json({
+			error: validate.error
+		})
+	}
+
+	productQuery.user_id = payload.user_id
+	productQuery.product_id = payload.product_id
+	productQuery.date = payload.date
+
+	UserView.create(productQuery, (err, purchaseResults) => {
 		if (err) {
 			console.log(`error while creating product purchase ${err || err.stack}`);
 
@@ -284,6 +327,92 @@ function purchasebyproductFilter(req, res) {
 	});
 }
 
+function productViewFilter(req, res) {
+	let filter = {},startDate, endDate,groupFilter={};
+	let filterby = req.query.filterby || req.query.filterBy
+	let productId = req.query.productId || req.query.productid
+
+
+	filter={
+		product_id: productId
+	}
+
+	if(filterby=="daily"){
+		groupFilter={day:{$dayOfMonth:"$viewDate"}}
+	}else if(filterby=="weekly"){
+		groupFilter={week:{$week:"$viewDate"}}
+	}else if(filterby=="monthly"){
+		groupFilter={month:{$month:"$viewDate"}}
+	}else if(filterby=="yearly"){
+		groupFilter={year:{$year:"$viewDate"}}
+	}else if(filterby=="yearly"){
+		groupFilter={year:{$year:"$viewDate"}}
+	}else if(filterby=="custom"){
+		if (req.query.startDate && req.query.endDate) {
+			startDate = moment(req.query.startDate).startOf('day').toISOString();
+			endDate = moment(req.query.endDate).endOf('day').toISOString();
+			dateQuery = {
+				$gte: new Date(startDate),
+				$lte: new Date(endDate)
+			}
+		} else if (req.query.startDate) {
+			startDate = moment(req.query.startDate).startOf('day').toISOString();
+			dateQuery = {
+				$gte: new Date(startDate)
+			}
+		} else if (req.query.endDate) {
+			endDate = moment(req.query.endDate).endOf('day').toISOString();
+			dateQuery = {
+				$lte: new Date(endDate)
+			}
+		} else {
+			return res.status(400).json({
+				error: 'startDate and endDate is missing'
+			});
+		}
+		filter.date= dateQuery
+		groupFilter=null
+	}else{
+		groupFilter={day:{$dayOfMonth:"$viewDate"}}
+	}
+
+	let query = [{
+			$match: filter
+		},
+		{
+			$group: {
+				_id: groupFilter,
+				totalUser: {
+					$sum: 1
+				},
+				users: {
+					$addToSet: "$user_id"
+				}
+			}
+		},
+		{
+			$project: {
+				_id: 0,
+				filter: "$_id",
+				totalUser: 1,
+				users: 1
+			}
+		}
+	]
+
+	UserView.aggregate(query, (err, purchaseResult) => {
+
+		if (err) {
+			console.log(`error while fetching purchase ${err || err.stack}`);
+			return res.status(400).json({
+				error: 'something went wrong, please try again later'
+			});
+		}
+
+		res.status(200).json(purchaseResult);
+	}).allowDiskUse(true);
+}
+
 
 module.exports = {
 	createProduct,
@@ -291,5 +420,7 @@ module.exports = {
 	productById,
 	purchaseById,
 	purchaselist,
-	purchasebyproductFilter
+	purchasebyproductFilter,
+	productViewFilter,
+	createProductView
 }
