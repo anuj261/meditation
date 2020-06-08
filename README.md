@@ -26,7 +26,7 @@ node index.js
 API collection Description
 
 POSTMAN collection
-https://www.getpostman.com/collections/5f041648d2ca6cbd5398
+https://www.getpostman.com/collections/5f041648d2ca6cbd5398     
 
 
 
@@ -95,7 +95,10 @@ GET /api/product/purchase/:purchase_id
 8. Get list of all product
 GET /api/product/purchase/list
 
-9. Get list of product view
+9. Insert new product purchase
+POST /api/product/view/create
+
+10. Get list of product view
 
 GET api/product/view/filter
 productId=5edbe9890ce7e20c10485811
@@ -104,5 +107,71 @@ filterby=monthly
 filterby=monthly
 filterby=yearly
 filterby=custom&startDate=2020-08-03&endDate=2021-08-03
+
+Sample Response for filterby=monthly
+[
+    {
+        "totalUser": 2,
+        "users": [
+            "5ed15734c04bb439ccdd54b82",
+            "5ed15734c04bb439ccdd54b8"
+        ],
+        "filter": {
+            "month": 1
+        },
+        "totalUniqueUser": 2
+    },
+    {
+        "totalUser": 12,
+        "users": [
+            "5ed15734c04bb439ccdd54b81",
+            "5ed15734c04bb439ccdd54b8"
+        ],
+        "filter": {
+            "month": 6
+        },
+        "totalUniqueUser": 2
+    },
+    {
+        "totalUser": 1,
+        "users": [
+            "5ed15734c04bb439ccdd54b8"
+        ],
+        "filter": {
+            "month": 3
+        },
+        "totalUniqueUser": 1
+    },
+    {
+        "totalUser": 1,
+        "users": [
+            "5ed15734c04bb439ccdd54b8"
+        ],
+        "filter": {
+            "month": 5
+        },
+        "totalUniqueUser": 1
+    },
+    {
+        "totalUser": 1,
+        "users": [
+            "5ed15734c04bb439ccdd54b8"
+        ],
+        "filter": {
+            "month": 2
+        },
+        "totalUniqueUser": 1
+    },
+    {
+        "totalUser": 1,
+        "users": [
+            "5ed15734c04bb439ccdd54b8"
+        ],
+        "filter": {
+            "month": 4
+        },
+        "totalUniqueUser": 1
+    }
+]
 
 

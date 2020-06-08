@@ -395,7 +395,10 @@ function productViewFilter(req, res) {
 				_id: 0,
 				filter: "$_id",
 				totalUser: 1,
-				users: 1
+				users: 1,
+				totalUniqueUser: {
+					$size: "$users"
+				}
 			}
 		}
 	]
