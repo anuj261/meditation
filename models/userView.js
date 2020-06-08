@@ -10,5 +10,5 @@ const schema = new Schema({
 		required: 'Must have start date - default value is the created date'
 	},
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
-
+schema.index({product_id:1})
 module.exports = mongoose.model('UserView', schema);
